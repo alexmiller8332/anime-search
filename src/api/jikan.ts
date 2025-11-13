@@ -1,17 +1,19 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://api.jikan.moe/v4",
-});
+const BASE_URL = "https://api.jikan.moe/v4";
 
-export const searchAnime = async (query: string) => {
-  const response = await api.get(`/anime?q=${query}&limit=20`);
-  return response.data.data;
-};
+// Fetch search results; if query is empty, return top anime
+export async function fetchAnime(query: string) {
+  const endpoint =
+    query && query.trim().length > 0
+      ? `${BASE_URL}/anime?q=${encodeURIComponent(query)}&limit=24`
+      : `${BASE_URL}/top/anime?limit=24`;
+  const res = await axios.get(endpoint);
+  // Jikan returns data.data for list endpoints
+  return res.data.data;
+}
 
-export const getAnimeDetail = async (id: string) => {
-  const response = await api.get(`/anime/${id}`);
-  return response.data.data;
-};
-
-export default api;
+export async function fetchAnimeDetail(id: string) {
+  const res = await axios.get(`${BASE_URL}/anime/${id}`);
+  return res.data.data;
+}
